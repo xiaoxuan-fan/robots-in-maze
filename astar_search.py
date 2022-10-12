@@ -1,10 +1,12 @@
+# Author: Xiaoxuan
+# Date: 10/7/2022
+# Purpose: Implement A* search
 from SearchSolution import SearchSolution
 from heapq import heappush, heappop
 
 
+# wrap state in a node
 class AstarNode:
-    # each search node except the root has a parent node
-    # and all search nodes wrap a state object
 
     def __init__(self, state, heuristic, parent=None, transition_cost=0):
         self.state = state
@@ -18,15 +20,13 @@ class AstarNode:
     def priority(self):
         return self.cost + self.heuristic
 
-    # comparison operator,
-    # needed for heappush and heappop to work with AstarNodes:
+    # comparison operator needed for heapq
     def __lt__(self, other):
         return self.priority() < other.priority()
 
 
-# take the current node, and follow its parents back
-#  as far as possible. Grab the states from the nodes,
-#  and reverse the resulting list of states.
+# given a node, find its way back to the start node
+# return a list of states
 def backchain(node):
     result = []
     current = node
@@ -38,31 +38,32 @@ def backchain(node):
     return result
 
 
+# A* search
 def astar_search(search_problem, heuristic_fn):
-    start_node = AstarNode(search_problem.start_state, heuristic_fn(search_problem.start_state))
-    pqueue = []
-    heappush(pqueue, start_node)
-
     solution = SearchSolution(search_problem, "Astar with heuristic " + heuristic_fn.__name__)
+    start_node = AstarNode(search_problem.start_state, heuristic_fn(search_problem.start_state))
+    visited_cost = {}
+    pqueue = []
 
-    visited_cost = {start_node.state: 0}
-
+    heappush(pqueue, start_node)
+    visited_cost[str(start_node.state)] = 0
     while pqueue:
         node = heappop(pqueue)
+        state = node.state
 
-        if search_problem.goal_test(node.state):
+        if search_problem.goal_test(state):
             solution.path = backchain(node)
             solution.cost = node.cost
             return solution
 
-        children = search_problem.get_successors(node.state)
+        children = search_problem.get_successors(state)
         for child in children:
             solution.nodes_visited += 1
-            transition_cost = search_problem.transition_cost(node.state, child)
+            transition_cost = search_problem.transition_cost(state, child)
             cost = node.cost + transition_cost
 
-            if child not in visited_cost or visited_cost[child] > cost:
-                visited_cost[child] = cost
+            if str(child) not in visited_cost or visited_cost[str(child)] > cost:
+                visited_cost[str(child)] = cost
                 heuristic = heuristic_fn(child)
                 child_node = AstarNode(child, heuristic, node, transition_cost)
                 heappush(pqueue, child_node)

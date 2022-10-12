@@ -1,3 +1,9 @@
+# Author: Xiaoxuan
+# Date: 10/9/2022
+# Purpose: a description of the search problem.
+# One robot
+# They take turns to move.
+# They can't run into walls or each other.
 from Maze import Maze
 from time import sleep
 

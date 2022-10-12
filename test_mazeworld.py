@@ -3,25 +3,19 @@ from Maze import Maze
 from astar_search import astar_search
 
 
-# uniform cost search (heuristic = 0
+# uniform cost search (heuristic=0)
 def null_heuristic(state):
     return 0
 
 
-# Test problems
+# Create a few test problems:
+mp2 = MazeworldProblem(Maze('maze2.maz'), [0, 1])
+mp3 = MazeworldProblem(Maze('maze3.maz'), [1, 4, 1, 3, 1, 2])
 
-test_maze3 = Maze("maze3.maz")
-test_mp = MazeworldProblem(test_maze3, (1, 4, 1, 3, 1, 2))
+print(astar_search(mp2, null_heuristic))
+print(astar_search(mp2, mp2.manhattan_heuristic))
 
-print(test_mp.get_successors(test_mp.start_state))
-
-# this should explore a lot of nodes; it's just uniform-cost search
-result = astar_search(test_mp, null_heuristic)
-print(result)
-
-# this should do a bit better:
-result = astar_search(test_mp, test_mp.manhattan_heuristic)
-print(result)
-test_mp.animate_path(result.path)
-
-# Your additional tests here:
+print(astar_search(mp3, null_heuristic))
+solution = astar_search(mp3, mp3.manhattan_heuristic)
+print(solution)
+mp3.animate_path(solution.path)
